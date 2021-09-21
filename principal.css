@@ -1,0 +1,20 @@
+body{
+    background-image: url("5.jpg");
+    background-size: cover;
+}
+.titulouno{
+    position:absolute;
+    margin-left: 50px;
+    bottom: 0px;
+    top: 20%;
+    font-size: 150px;
+    color: white;
+    font-family: 'Anton', sans-serif;
+    text-align: center;
+    }
+.informacion{
+font-family: 'Abel', sans-serif;
+text-align: center;
+font-size: 40px;
+
+}
