@@ -2,13 +2,14 @@ body{
     background-image: url("5.jpg");
     background-size: cover;
 }
+
 /*PRIMER TITULO*/
 .titulouno{
     position:absolute;
     margin-left: 50px;
     bottom: 0px;
     top: 20%;
-    font-size: 150px;
+    font-size: 10vw;
     color: white;
     font-family: 'Anton', sans-serif;
     text-align: center;
