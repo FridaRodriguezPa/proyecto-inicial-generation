@@ -1,24 +1,31 @@
 const APIController = (function() {
-    
+    //Claves 
     const clientId = '26af823744f44bdbb6dd54eac46ee5bc';
     const clientSecret = '1d873d6a75c8423e9280c8cbfbd1ca39';
 
-    // private methods
+    // Métodos privados   / Solicitud de Acceso a la API
     const _getToken = async () => {
-
+            //URL proporcionada por Spotify
+                //Fetch sirve para hacer peticiones a un servidor
         const result = await fetch('https://accounts.spotify.com/api/token', {
             method: 'POST',
+            //Encabezado - Objeto
             headers: {
+                //tipo de contenido 
                 'Content-Type' : 'application/x-www-form-urlencoded', 
+                //autorización 
                 'Authorization' : 'Basic ' + btoa(clientId + ':' + clientSecret)
             },
+            //Tipos de datos que se estan procesando 
             body: 'grant_type=client_credentials'
         });
-
+            //Resultado de la peticion conviertiendolo a un objeto
         const data = await result.json();
+        //hacer solicitudes
         return data.access_token;
     }
-    
+
+    //GENEROS 
     const _getGenres = async (token) => {
 
         const result = await fetch(`https://api.spotify.com/v1/browse/categories?locale=sv_US`, {
@@ -29,7 +36,7 @@ const APIController = (function() {
         const data = await result.json();
         return data.categories.items;
     }
-
+    //PLAYLIST CONFORME AL GENERO
     const _getPlaylistByGenre = async (token, genreId) => {
 
         const limit = 10;
@@ -42,7 +49,7 @@ const APIController = (function() {
         const data = await result.json();
         return data.playlists.items;
     }
-
+        //CANCIONES
     const _getTracks = async (token, tracksEndPoint) => {
 
         const limit = 10;
@@ -55,7 +62,7 @@ const APIController = (function() {
         const data = await result.json();
         return data.items;
     }
-
+        //CANCIÓN 
     const _getTrack = async (token, trackEndPoint) => {
 
         const result = await fetch(`${trackEndPoint}`, {
@@ -66,7 +73,7 @@ const APIController = (function() {
         const data = await result.json();
         return data;
     }
-
+    //Llamamos las peticiones anteriores
     return {
         getToken() {
             return _getToken();
@@ -90,7 +97,7 @@ const APIController = (function() {
 // UI Module
 const UIController = (function() {
 
-    //object to hold references to html selectors
+    //objetos que hacen referencia a selectores de html
     const DOMElements = {
         selectGenre: '#select_genre',
         selectPlaylist: '#select_playlist',
@@ -103,7 +110,7 @@ const UIController = (function() {
     //public methods
     return {
 
-        //method to get input fields
+        //Método para llenar los campos de input para obtener la información 
         inputField() {
             return {
                 genre: document.querySelector(DOMElements.selectGenre),
@@ -114,7 +121,7 @@ const UIController = (function() {
             }
         },
 
-        // need methods to create select list option
+        //Necesita los métodos para crear la lista de opciones
         createGenre(text, value) {
             const html = `<option value="${value}">${text}</option>`;
             document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
@@ -125,17 +132,17 @@ const UIController = (function() {
             document.querySelector(DOMElements.selectPlaylist).insertAdjacentHTML('beforeend', html);
         },
 
-        // need method to create a track list group item 
+        //Necesita un método para crear una lista de canciones 
         createTrack(id, name) {
             const html = `<a href="#" class="list-group-item list-group-item-action list-group-item-light" id="${id}">${name}</a>`;
             document.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
         },
 
-        // need method to create the song detail
+        //Necesita un método para crear los detalles de las canciones
         createTrackDetail(img, title, artist) {
 
             const detailDiv = document.querySelector(DOMElements.divSongDetail);
-            // any time user clicks a new song, we need to clear out the song detail div
+            //Cada vez que el usuario de click a una nueva cancion, se necesita limpiar los datos del div
             detailDiv.innerHTML = '';
 
             const html = 
@@ -153,7 +160,7 @@ const UIController = (function() {
 
             detailDiv.insertAdjacentHTML('beforeend', html)
         },
-
+        //Limpia los datos
         resetTrackDetail() {
             this.inputField().songDetail.innerHTML = '';
         },
@@ -181,18 +188,19 @@ const UIController = (function() {
 
 })();
 
+        //LLAMA LOS MÉTODOS ANTERIORES
 const APPController = (function(UICtrl, APICtrl) {
 
     // get input field object ref
     const DOMInputs = UICtrl.inputField();
 
-    // get genres on page load
+    // Carga los generos a la página
     const loadGenres = async () => {
-        //get the token
+        //Llama a la llave
         const token = await APICtrl.getToken();           
         //store the token onto the page
         UICtrl.storeToken(token);
-        //get the genres
+        //obtinene los generos
         const genres = await APICtrl.getGenres(token);
         //populate our genres select element
         genres.forEach(element => UICtrl.createGenre(element.name, element.id));
@@ -258,5 +266,5 @@ const APPController = (function(UICtrl, APICtrl) {
 
 })(UIController, APIController);
 
-// will need to call a method to load the genres on page load
+// Necesitamos llamar los métodos para llamarlos en la pagina 
 APPController.init();
